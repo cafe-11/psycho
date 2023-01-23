@@ -34,14 +34,15 @@ ecr_repo_name=$DOCKER_IMAGE_NAME"-ecr-repo"
 echo "value of ecr_repo_name is $ecr_repo_name"
 
 # || means if the first command succeed the second will never be executed
-aws ecr-public describe-repositories --repository-names ${ecr_repo_name} || aws ecr-public create-repository --repository-name ${ecr_repo_name}
+aws ecr describe-repositories --repository-names ${ecr_repo_name} || aws ecr create-repository --repository-name ${ecr_repo_name}
 
 image_name=$DOCKER_IMAGE_NAME-$CODEBUILD_BUILD_NUMBER
 
 # Get the login command from ECR and execute docker login
-aws ecr-public get-login-password | docker login --username AWS --password-stdin public.ecr.aws
+aws ecr get-login-password | docker login --username AWS --password-stdin ${account}.dkr.ecr.${region}.amazonaws.com
 
-fullname="public.ecr.aws/c6o4a2g4/${ecr_repo_name}:$image_name"
+
+fullname="${account}.dkr.ecr.${region}.amazonaws.com/${ecr_repo_name}:$image_name"
 echo "fullname is $fullname"
 # Build the docker image locally with the image name and then push it to ECR with the full name.
 
